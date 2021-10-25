@@ -11,6 +11,8 @@ const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/user");
 const logRoutes = require("./routes/log");
 const emailRoutes = require("./routes/email");
+const categoryRoutes = require("./routes/category");
+const blogRoutes = require("./routes/blog");
 
 // app
 const app = express();
@@ -37,6 +39,8 @@ app.use("/api", authRoutes);
 app.use("/api", userRoutes);
 app.use("/api", logRoutes);
 app.use("/api", emailRoutes);
+app.use("/api", categoryRoutes);
+app.use("/api", blogRoutes);
 
 const port = process.env.PORT || 8000;
 
