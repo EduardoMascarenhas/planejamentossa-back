@@ -26,12 +26,6 @@ exports.create = (req, res) => {
       });
     }
 
-    if (!subTitle || !subTitle.length) {
-      return res.status(400).json({
-        error: "É nescessário digitar um sub título para o blog",
-      });
-    }
-
     if (!body || body.length < 50) {
       return res.status(400).json({
         error: "Conteúdo do blog é muito curto",
@@ -93,7 +87,11 @@ exports.create = (req, res) => {
 // list, read, remove, update
 
 exports.list = (req, res) => {
+  let order = req.query.order ? req.query.order : "desc";
+  let sortBy = req.query.sortBy ? req.query.sortBy : "createdAt";
+
   Blog.find({})
+    .sort([[sortBy, order]])
     .populate("categories", "_id name slug")
     .populate("postedBy", "_id name email")
     .select("_id title slug excerpt categories postedBy createdAt updatedAt")

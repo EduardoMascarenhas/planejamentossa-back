@@ -26,12 +26,6 @@ exports.create = (req, res) => {
       });
     }
 
-    if (!subTitle || !subTitle.length) {
-      return res.status(400).json({
-        error: "É nescessário digitar um sub título para o eixo",
-      });
-    }
-
     if (!vis || vis.length < 50) {
       return res.status(400).json({
         error: "Conteúdo da visão é muito curto",
