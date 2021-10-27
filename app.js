@@ -15,6 +15,7 @@ const categoryRoutes = require("./routes/category");
 const blogRoutes = require("./routes/blog");
 const eixoRoutes = require("./routes/eixo");
 const projetoRoutes = require("./routes/projeto");
+const cartaRoutes = require("./routes/carta");
 
 // app
 const app = express();
@@ -45,6 +46,7 @@ app.use("/api", categoryRoutes);
 app.use("/api", blogRoutes);
 app.use("/api", eixoRoutes);
 app.use("/api", projetoRoutes);
+app.use("/api", cartaRoutes);
 
 const port = process.env.PORT || 8000;
 
