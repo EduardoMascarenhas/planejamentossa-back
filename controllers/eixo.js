@@ -26,17 +26,17 @@ exports.create = (req, res) => {
       });
     }
 
-    if (!vis || vis.length < 50) {
+    if (!vis || vis.length < 10) {
       return res.status(400).json({
         error: "Conteúdo da visão é muito curto",
       });
     }
-    if (!met || met.length < 50) {
+    if (!met || met.length < 10) {
       return res.status(400).json({
         error: "Conteúdo das metas é muito curto",
       });
     }
-    if (!pro || pro.length < 50) {
+    if (!pro || pro.length < 10) {
       return res.status(400).json({
         error: "Conteúdo dos projetos é muito curto",
       });

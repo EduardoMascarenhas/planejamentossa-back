@@ -26,7 +26,7 @@ exports.create = (req, res) => {
       });
     }
 
-    if (!body || body.length < 50) {
+    if (!body || body.length < 10) {
       return res.status(400).json({
         error: "Conteúdo do blog é muito curto",
       });
