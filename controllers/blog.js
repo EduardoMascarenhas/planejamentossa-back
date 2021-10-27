@@ -37,7 +37,6 @@ exports.create = (req, res) => {
         error: "É necessário selecionar pelomenos uma categoria",
       });
     }
-    console.log(categories);
     let blog = new Blog();
     blog.title = title;
     blog.subTitle = subTitle;
@@ -214,7 +213,6 @@ exports.update = (req, res) => {
       oldBlog.slug = slugBeforeMerge;
 
       const { title, subTitle, body, categories } = fields;
-      console.log(title, subTitle, body, categories);
 
       if (body) {
         oldBlog.excerpt = smartTrim(body, 320, " ", " ...");
@@ -278,7 +276,6 @@ exports.thumb = (req, res) => {
 };
 
 exports.listRelated = (req, res) => {
-  // console.log(req.body.blog);
   let limit = req.body.limit ? parseInt(req.body.limit) : 3;
   const { _id, categories } = req.body.blog;
 
@@ -298,7 +295,6 @@ exports.listRelated = (req, res) => {
 
 //
 exports.listSearch = (req, res) => {
-  console.log(req.query);
   const { search } = req.query;
   if (search) {
     Blog.find(

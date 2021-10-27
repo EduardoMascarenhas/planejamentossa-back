@@ -19,7 +19,6 @@ exports.create = (req, res) => {
     }
 
     const { name, subTitle, body } = fields;
-    console.log(name, subTitle, body);
     if (!name || !name.length) {
       return res.status(400).json({
         error: "É nescessário digitar um nome para o projeto",
@@ -112,7 +111,6 @@ exports.update = (req, res) => {
       oldProjeto.slug = slugBeforeMerge;
 
       const { name, subTitle, body, categories } = fields;
-      console.log(name, subTitle, body, categories);
 
       if (body) {
         oldProjeto.excerpt = smartTrim(body, 320, " ", " ...");

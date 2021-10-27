@@ -155,7 +155,6 @@ exports.update = (req, res) => {
       oldCarta.slug = slugBeforeMerge;
 
       const { title, subTitle, body } = fields;
-      console.log(title, subTitle, body);
 
       if (body) {
         oldCarta.excerpt = smartTrim(body, 320, " ", " ...");
@@ -216,7 +215,6 @@ exports.thumb = (req, res) => {
 
 //
 exports.listSearch = (req, res) => {
-  console.log(req.query);
   const { search } = req.query;
   if (search) {
     Carta.find(
