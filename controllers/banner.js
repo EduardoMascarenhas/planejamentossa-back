@@ -1,4 +1,4 @@
-const Slider = require("../models/slider");
+const Banner = require("../models/banner");
 const formidable = require("formidable");
 const { stripHtml } = require("string-strip-html");
 const _ = require("lodash");
@@ -17,10 +17,10 @@ exports.create = (req, res) => {
 
     const { title, subTitle, link } = fields;
 
-    let slider = new Slider();
-    slider.title = title;
-    slider.subTitle = subTitle;
-    slider.link = link;
+    let banner = new Banner();
+    banner.title = title;
+    banner.subTitle = subTitle;
+    banner.link = link;
 
     if (files.image) {
       if (files.image.size > 3000000) {
@@ -28,11 +28,11 @@ exports.create = (req, res) => {
           error: "Images should be less then 3mb in size",
         });
       }
-      slider.image.data = fs.readFileSync(files.image.path);
-      slider.image.contentType = files.image.type;
+      banner.image.data = fs.readFileSync(files.image.path);
+      banner.image.contentType = files.image.type;
     }
 
-    slider.save((err, result) => {
+    banner.save((err, result) => {
       if (err) {
         return res.status(400).json({
           error: errorHandler(err),
@@ -47,7 +47,7 @@ exports.list = (req, res) => {
   let order = req.query.order ? req.query.order : "desc";
   let sortBy = req.query.sortBy ? req.query.sortBy : "createdAt";
 
-  Slider.find({})
+  Banner.find({})
     .sort([[sortBy, order]])
     .select("_id link createdAt updatedAt")
     .exec((err, data) => {
@@ -61,8 +61,8 @@ exports.list = (req, res) => {
 };
 
 exports.read = (req, res) => {
-  const _id = req.params.sliderId;
-  Slider.findOne({ _id })
+  const _id = req.params.bannerId;
+  Banner.findOne({ _id })
     .select("_id link createdAt updatedAt")
     .exec((err, data) => {
       if (err) {
@@ -75,24 +75,24 @@ exports.read = (req, res) => {
 };
 
 exports.remove = (req, res) => {
-  const _id = req.params.sliderId;
+  const _id = req.params.bannerId;
 
-  Slider.findOneAndRemove({ _id }).exec((err, data) => {
+  Banner.findOneAndRemove({ _id }).exec((err, data) => {
     if (err) {
       return res.status(400).json({
         error: errorHandler(err),
       });
     }
     res.json({
-      message: "Slider removido com sucesso!",
+      message: "Banner removido com sucesso!",
     });
   });
 };
 
 exports.update = (req, res) => {
-  const _id = req.params.sliderId;
+  const _id = req.params.bannerId;
 
-  Slider.findOne({ _id }).exec((err, oldSlider) => {
+  Banner.findOne({ _id }).exec((err, oldBanner) => {
     if (err) {
       return res.status(400).json({
         error: errorHandler(err),
@@ -108,9 +108,9 @@ exports.update = (req, res) => {
           error: "Image could not upload",
         });
       }
-      let idBeforeMerge = oldSlider._id;
-      oldSlider = _.merge(oldSlider, fields);
-      oldSlider._id = idBeforeMerge;
+      let idBeforeMerge = oldBanner._id;
+      oldBanner = _.merge(oldBanner, fields);
+      oldBanner._id = idBeforeMerge;
 
       const { link, image } = fields;
 
@@ -122,11 +122,11 @@ exports.update = (req, res) => {
             error: "Image should be less then 3mb in size",
           });
         }
-        oldSlider.image.data = fs.readFileSync(files.image.path);
-        oldSlider.image.contentType = files.image.type;
+        oldBanner.image.data = fs.readFileSync(files.image.path);
+        oldBanner.image.contentType = files.image.type;
       }
 
-      oldSlider.save((err, result) => {
+      oldBanner.save((err, result) => {
         if (err) {
           return res.status(400).json({
             error: errorHandler(err),
@@ -139,16 +139,16 @@ exports.update = (req, res) => {
 };
 
 exports.image = (req, res) => {
-  const _id = req.params.sliderId;
-  Slider.findOne({ _id })
+  const _id = req.params.bannerId;
+  Banner.findOne({ _id })
     .select("image")
-    .exec((err, slider) => {
-      if (err || !slider) {
+    .exec((err, banner) => {
+      if (err || !banner) {
         return res.status(400).json({
           error: errorHandler(err),
         });
       }
-      res.set("Content-Type", slider.image.contentType);
-      return res.send(slider.image.data);
+      res.set("Content-Type", banner.image.contentType);
+      return res.send(banner.image.data);
     });
 };
