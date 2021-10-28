@@ -16,6 +16,7 @@ const blogRoutes = require("./routes/blog");
 const eixoRoutes = require("./routes/eixo");
 const projetoRoutes = require("./routes/projeto");
 const cartaRoutes = require("./routes/carta");
+const sliderRoutes = require("./routes/slider");
 
 // app
 const app = express();
@@ -47,6 +48,7 @@ app.use("/api", blogRoutes);
 app.use("/api", eixoRoutes);
 app.use("/api", projetoRoutes);
 app.use("/api", cartaRoutes);
+app.use("/api", sliderRoutes);
 
 const port = process.env.PORT || 8000;
 

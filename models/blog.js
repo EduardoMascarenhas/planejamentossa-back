@@ -1,51 +1,30 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema;
 
 const blogSchema = new mongoose.Schema(
-    {
-        title: {
-            type: String,
-            trim: true,
-            min: 3,
-            max: 160,
-            required: true
-        },
-        subTitle: {
-            type: String,
-            trim: true,
-            min: 3,
-            max: 160,
-        },
-        slug: {
-            type: String,
-            unique: true,
-            index: true
-        },
-        body: {
-            type: {},
-            required: true,
-        },
-        excerpt: {
-            type: String,
-            max: 1000
-        },
-        mtitle: {
-            type: String
-        },
-        mdesc: {
-            type: String
-        },
-        thumb: {
-            data: Buffer,
-            contentType: String
-        },
-        categories: [{ type: ObjectId, ref: 'Category', required: true }],
-        postedBy: {
-            type: ObjectId,
-            ref: 'User'
-        }
+  {
+    title: {
+      type: String,
+      trim: true,
+      min: 3,
+      max: 160,
+      required: true,
     },
-    { timestamps: true }
+    subTitle: {
+      type: String,
+      trim: true,
+    },
+    slug: {
+      type: String,
+      unique: true,
+      index: true,
+    },
+    link: {
+      type: String,
+      required: true,
+    },
+  },
+  { timestamps: true }
 );
 
-module.exports = mongoose.model('Blog', blogSchema);
+module.exports = mongoose.model("Blog", blogSchema);

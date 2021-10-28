@@ -1,13 +1,9 @@
-const Blog = require("../models/blog");
-const Category = require("../models/category");
-const User = require("../models/user");
+const Slider = require("../models/slider");
 const formidable = require("formidable");
-const slugify = require("slugify");
 const { stripHtml } = require("string-strip-html");
 const _ = require("lodash");
 const { errorHandler } = require("../helpers/dbErrorHandler");
 const fs = require("fs");
-const { smartTrim } = require("../helpers/blog");
 
 exports.create = (req, res) => {
   let form = new formidable.IncomingForm();
@@ -19,26 +15,22 @@ exports.create = (req, res) => {
       });
     }
 
-    const { title, subTitle, link } = fields;
-    if (!title || !title.length) {
-      return res.status(400).json({
-        error: "É nescessário digitar um título para o blog",
-      });
+    const { link, image } = fields;
+
+    let slider = new Slider();
+    slider.link = link;
+
+    if (files.image) {
+      if (files.image.size > 3000000) {
+        return res.status(400).json({
+          error: "Images should be less then 3mb in size",
+        });
+      }
+      slider.image.data = fs.readFileSync(files.image.path);
+      slider.image.contentType = files.image.type;
     }
 
-    if (!link) {
-      return res.status(400).json({
-        error: "É nescessário fornecer um link",
-      });
-    }
-
-    let blog = new Blog();
-    blog.title = title;
-    blog.subTitle = subTitle;
-    blog.link = link;
-    blog.slug = slugify(title).toLowerCase();
-
-    blog.save((err, result) => {
+    slider.save((err, result) => {
       if (err) {
         return res.status(400).json({
           error: errorHandler(err),
@@ -53,9 +45,9 @@ exports.list = (req, res) => {
   let order = req.query.order ? req.query.order : "desc";
   let sortBy = req.query.sortBy ? req.query.sortBy : "createdAt";
 
-  Blog.find({})
+  Slider.find({})
     .sort([[sortBy, order]])
-    .select("_id title slug subTitle link createdAt updatedAt")
+    .select("_id link createdAt updatedAt")
     .exec((err, data) => {
       if (err) {
         return res.json({
@@ -67,9 +59,9 @@ exports.list = (req, res) => {
 };
 
 exports.read = (req, res) => {
-  const slug = req.params.slug.toLowerCase();
-  Blog.findOne({ slug })
-    .select("_id title subTitle link slug createdAt updatedAt")
+  const _id = req.params._id;
+  Slider.findOne({ _id })
+    .select("_id link createdAt updatedAt")
     .exec((err, data) => {
       if (err) {
         return res.json({
@@ -81,23 +73,23 @@ exports.read = (req, res) => {
 };
 
 exports.remove = (req, res) => {
-  const slug = req.params.slug.toLowerCase();
-  Blog.findOneAndRemove({ slug }).exec((err, data) => {
+  let slider = req.slider;
+  slider.remove((err) => {
     if (err) {
-      return res.json({
+      return res.status(400).json({
         error: errorHandler(err),
       });
     }
     res.json({
-      message: "Notícia removida com sucesso!",
+      message: "Slider removido com sucesso!",
     });
   });
 };
 
 exports.update = (req, res) => {
-  const slug = req.params.slug.toLowerCase();
+  const _id = req.params._id;
 
-  Blog.findOne({ slug }).exec((err, oldBlog) => {
+  Slider.findOne({ _id }).exec((err, oldSlider) => {
     if (err) {
       return res.status(400).json({
         error: errorHandler(err),
@@ -113,13 +105,23 @@ exports.update = (req, res) => {
           error: "Image could not upload",
         });
       }
-      let slugBeforeMerge = oldBlog.slug;
-      oldBlog = _.merge(oldBlog, fields);
-      oldBlog.slug = slugBeforeMerge;
+      let idBeforeMerge = oldSlider._id;
+      oldSlider = _.merge(oldSlider, fields);
+      oldSlider._id = idBeforeMerge;
 
-      const { title, subTitle, link } = fields;
+      const { link, image } = fields;
 
-      oldBlog.save((err, result) => {
+      if (files.image) {
+        if (files.image.size > 3000000) {
+          return res.status(400).json({
+            error: "Image should be less then 3mb in size",
+          });
+        }
+        oldSlider.image.data = fs.readFileSync(files.image.path);
+        oldSlider.image.contentType = files.image.type;
+      }
+
+      oldSlider.save((err, result) => {
         if (err) {
           return res.status(400).json({
             error: errorHandler(err),
@@ -129,4 +131,19 @@ exports.update = (req, res) => {
       });
     });
   });
+};
+
+exports.image = (req, res) => {
+  const _id = req.params._id;
+  Slider.findOne({ _id })
+    .select("image")
+    .exec((err, slider) => {
+      if (err || !slider) {
+        return res.status(400).json({
+          error: errorHandler(err),
+        });
+      }
+      res.set("Content-Type", slider.image.contentType);
+      return res.send(slider.image.data);
+    });
 };
