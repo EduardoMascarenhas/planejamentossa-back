@@ -44,7 +44,7 @@ exports.create = (req, res) => {
 };
 
 exports.list = (req, res) => {
-  let order = req.query.order ? req.query.order : "desc";
+  let order = req.query.order ? req.query.order : "asc";
   let sortBy = req.query.sortBy ? req.query.sortBy : "createdAt";
 
   Slider.find({})
