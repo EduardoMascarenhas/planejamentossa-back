@@ -61,17 +61,16 @@ exports.create = (req, res) => {
     });
   });
 };
-
 // list, read, remove, update
 
 exports.list = (req, res) => {
-  let order = req.query.order ? req.query.order : "desc";
+  let order = req.query.order ? req.query.order : "asc";
   let sortBy = req.query.sortBy ? req.query.sortBy : "createdAt";
 
   Carta.find({})
     .sort([[sortBy, order]])
     .populate("postedBy", "_id name email")
-    .select("_id title slug excerpt postedBy createdAt updatedAt")
+    .select("_id title subTitle body slug excerpt postedBy createdAt updatedAt")
     .exec((err, data) => {
       if (err) {
         return res.json({
@@ -154,22 +153,7 @@ exports.update = (req, res) => {
       oldCarta = _.merge(oldCarta, fields);
       oldCarta.slug = slugBeforeMerge;
 
-      const { title, subTitle, body } = fields;
-
-      if (body) {
-        oldCarta.excerpt = smartTrim(body, 320, " ", " ...");
-        oldCarta.desc = stripHtml(body.substring(0, 160));
-      }
-
-      if (files.thumb) {
-        if (files.thumb.size > 10000000) {
-          return res.status(400).json({
-            error: "Image should be less then 1mb in size",
-          });
-        }
-        oldCarta.thumb.data = fs.readFileSync(files.thumb.path);
-        oldCarta.thumb.contentType = files.thumb.type;
-      }
+      const { title, subTitle, link } = fields;
 
       oldCarta.save((err, result) => {
         if (err) {
@@ -177,7 +161,6 @@ exports.update = (req, res) => {
             error: errorHandler(err),
           });
         }
-        // result.photo = undefined;
         res.json(result);
       });
     });
