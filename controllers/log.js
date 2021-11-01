@@ -64,7 +64,6 @@ exports.read = (req, res) => {
 };
 
 exports.remove = (req, res) => {
-  console.log(req);
   Log.findOneAndRemove(req.log).exec((err, data) => {
     if (err) {
       return res.status(400).json({

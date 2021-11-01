@@ -114,8 +114,6 @@ exports.update = (req, res) => {
 
       const { link, image } = fields;
 
-      console.log(files);
-
       if (files.image) {
         if (files.image.size > 3000000) {
           return res.status(400).json({

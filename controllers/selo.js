@@ -1,4 +1,4 @@
-const Slider = require("../models/slider");
+const Selo = require("../models/selo");
 const formidable = require("formidable");
 const { stripHtml } = require("string-strip-html");
 const _ = require("lodash");
@@ -15,12 +15,23 @@ exports.create = (req, res) => {
       });
     }
 
-    const { title, subTitle, link } = fields;
+    const { title, body } = fields;
 
-    let slider = new Slider();
-    slider.title = title;
-    slider.subTitle = subTitle;
-    slider.link = link;
+    if (!title || !title.length) {
+      return res.status(400).json({
+        error: "É nescessário digitar um título para o selo",
+      });
+    }
+
+    if (!body || body.length < 10) {
+      return res.status(400).json({
+        error: "Conteúdo do selo é muito curto",
+      });
+    }
+
+    let selo = new Selo();
+    selo.title = title;
+    selo.body = body;
 
     if (files.image) {
       if (files.image.size > 3000000) {
@@ -28,11 +39,11 @@ exports.create = (req, res) => {
           error: "Images should be less then 3mb in size",
         });
       }
-      slider.image.data = fs.readFileSync(files.image.path);
-      slider.image.contentType = files.image.type;
+      selo.image.data = fs.readFileSync(files.image.path);
+      selo.image.contentType = files.image.type;
     }
 
-    slider.save((err, result) => {
+    selo.save((err, result) => {
       if (err) {
         return res.status(400).json({
           error: errorHandler(err),
@@ -47,9 +58,9 @@ exports.list = (req, res) => {
   let order = req.query.order ? req.query.order : "asc";
   let sortBy = req.query.sortBy ? req.query.sortBy : "createdAt";
 
-  Slider.find({})
+  Selo.find({})
     .sort([[sortBy, order]])
-    .select("_id link createdAt updatedAt")
+    .select("_id title body createdAt updatedAt")
     .exec((err, data) => {
       if (err) {
         return res.json({
@@ -61,9 +72,9 @@ exports.list = (req, res) => {
 };
 
 exports.read = (req, res) => {
-  const _id = req.params.sliderId;
-  Slider.findOne({ _id })
-    .select("_id link createdAt updatedAt")
+  const _id = req.params.seloId;
+  Selo.findOne({ _id })
+    .select("_id title body createdAt updatedAt")
     .exec((err, data) => {
       if (err) {
         return res.json({
@@ -75,24 +86,24 @@ exports.read = (req, res) => {
 };
 
 exports.remove = (req, res) => {
-  const _id = req.params.sliderId;
+  const _id = req.params.seloId;
 
-  Slider.findOneAndRemove({ _id }).exec((err, data) => {
+  Selo.findOneAndRemove({ _id }).exec((err, data) => {
     if (err) {
       return res.status(400).json({
         error: errorHandler(err),
       });
     }
     res.json({
-      message: "Slider removido com sucesso!",
+      message: "Selo removido com sucesso!",
     });
   });
 };
 
 exports.update = (req, res) => {
-  const _id = req.params.sliderId;
+  const _id = req.params.seloId;
 
-  Slider.findOne({ _id }).exec((err, oldSlider) => {
+  Selo.findOne({ _id }).exec((err, oldSelo) => {
     if (err) {
       return res.status(400).json({
         error: errorHandler(err),
@@ -108,11 +119,11 @@ exports.update = (req, res) => {
           error: "Image could not upload",
         });
       }
-      let idBeforeMerge = oldSlider._id;
-      oldSlider = _.merge(oldSlider, fields);
-      oldSlider._id = idBeforeMerge;
+      let idBeforeMerge = oldSelo._id;
+      oldSelo = _.merge(oldSelo, fields);
+      oldSelo._id = idBeforeMerge;
 
-      const { link, image } = fields;
+      const { title, body } = fields;
 
       if (files.image) {
         if (files.image.size > 3000000) {
@@ -120,11 +131,11 @@ exports.update = (req, res) => {
             error: "Image should be less then 3mb in size",
           });
         }
-        oldSlider.image.data = fs.readFileSync(files.image.path);
-        oldSlider.image.contentType = files.image.type;
+        oldSelo.image.data = fs.readFileSync(files.image.path);
+        oldSelo.image.contentType = files.image.type;
       }
 
-      oldSlider.save((err, result) => {
+      oldSelo.save((err, result) => {
         if (err) {
           return res.status(400).json({
             error: errorHandler(err),
@@ -137,16 +148,16 @@ exports.update = (req, res) => {
 };
 
 exports.image = (req, res) => {
-  const _id = req.params.sliderId;
-  Slider.findOne({ _id })
+  const _id = req.params.seloId;
+  Selo.findOne({ _id })
     .select("image")
-    .exec((err, slider) => {
-      if (err || !slider) {
+    .exec((err, selo) => {
+      if (err || !selo) {
         return res.status(400).json({
           error: errorHandler(err),
         });
       }
-      res.set("Content-Type", slider.image.contentType);
-      return res.send(slider.image.data);
+      res.set("Content-Type", selo.image.contentType);
+      return res.send(selo.image.data);
     });
 };
