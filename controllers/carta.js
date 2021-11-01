@@ -153,7 +153,17 @@ exports.update = (req, res) => {
       oldCarta = _.merge(oldCarta, fields);
       oldCarta.slug = slugBeforeMerge;
 
-      const { title, subTitle, link } = fields;
+      const { title, subTitle, body } = fields;
+
+      if (files.thumb) {
+        if (files.thumb.size > 3000000) {
+          return res.status(400).json({
+            error: "Image should be less then 3mb in size",
+          });
+        }
+        oldCarta.thumb.data = fs.readFileSync(files.thumb.path);
+        oldCarta.thumb.contentType = files.thumb.type;
+      }
 
       oldCarta.save((err, result) => {
         if (err) {
