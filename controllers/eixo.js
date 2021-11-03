@@ -229,7 +229,7 @@ exports.update = (req, res) => {
       if (projetos) {
         oldEixo.projetos = projetos.split(",");
       }
-
+      console.log(files.thumb);
       if (files.thumb) {
         if (files.thumb.size > 10000000) {
           return res.status(400).json({
