@@ -202,7 +202,7 @@ exports.remove = (req, res) => {
 };
 
 exports.update = (req, res) => {
-  const slug = req.params.slug.toLowerCase();
+  const slug = req.params.slug;
 
   Eixo.findOne({ slug }).exec((err, oldEixo) => {
     if (err) {
