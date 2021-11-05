@@ -131,7 +131,7 @@ exports.remove = (req, res) => {
 };
 
 exports.update = (req, res) => {
-  const slug = req.params.slug.toLowerCase();
+  const slug = req.params.slug;
 
   Carta.findOne({ slug }).exec((err, oldCarta) => {
     if (err) {
@@ -155,8 +155,10 @@ exports.update = (req, res) => {
 
       const { title, subTitle, body } = fields;
 
+      console.log(files.thumb);
+
       if (files.thumb) {
-        if (files.thumb.size > 3000000) {
+        if (files.thumb.size > 10000000) {
           return res.status(400).json({
             error: "Image should be less then 3mb in size",
           });
