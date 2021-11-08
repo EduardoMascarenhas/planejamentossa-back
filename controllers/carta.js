@@ -155,8 +155,6 @@ exports.update = (req, res) => {
 
       const { title, subTitle, body } = fields;
 
-      console.log(files.thumb);
-
       if (files.thumb) {
         if (files.thumb.size > 10000000) {
           return res.status(400).json({
