@@ -72,7 +72,7 @@ exports.read = (req, res) => {
   const slug = req.params.slug.toLowerCase();
 
   Projeto.findOne({ slug })
-    .populate("eixo", "_id title slug")
+    .populate("eixo", "_id title slug borderColor")
     .populate("selos", "_id title")
     .exec((err, projeto) => {
       if (err) {
