@@ -233,7 +233,7 @@ exports.update = (req, res) => {
       if (files.thumb) {
         if (files.thumb.size > 10000000) {
           return res.status(400).json({
-            error: "Image should be less then 1mb in size",
+            error: "Imagem deve ter menos de 1mb de tamanho",
           });
         }
         oldEixo.thumb.data = fs.readFileSync(files.thumb.path);
