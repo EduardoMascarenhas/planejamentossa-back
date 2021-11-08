@@ -18,7 +18,8 @@ exports.create = (req, res) => {
       });
     }
 
-    const { name, subTitle, body, eixo, selo } = fields;
+    const { name, subTitle, body, eixo, selos } = fields;
+
     if (!name || !name.length) {
       return res.status(400).json({
         error: "É nescessário digitar um nome para o projeto",
@@ -39,7 +40,8 @@ exports.create = (req, res) => {
     let projeto = new Projeto();
     projeto.name = name;
     projeto.eixo = eixo;
-    projeto.selo = selo;
+    let arrayOfSelos = selos && selos.split(",");
+    projeto.selos = arrayOfSelos;
     projeto.subTitle = subTitle;
     projeto.body = body;
     projeto.slug = slugify(name).toLowerCase();
@@ -71,7 +73,7 @@ exports.read = (req, res) => {
 
   Projeto.findOne({ slug })
     .populate("eixo", "_id title slug")
-    .populate("selo", "_id title")
+    .populate("selos", "_id title")
     .exec((err, projeto) => {
       if (err) {
         return res.status(400).json({
@@ -120,11 +122,19 @@ exports.update = (req, res) => {
       oldProjeto = _.merge(oldProjeto, fields);
       oldProjeto.slug = slugBeforeMerge;
 
-      const { name, subTitle, body, eixo, selo, categories } = fields;
+      const { name, subTitle, body, eixo, selos, categories } = fields;
 
+      if (!oldProjeto.eixo && !eixo) {
+        return res.status(400).json({
+          error: "É nescessário ter pelomenos um eixo",
+        });
+      }
       if (body) {
         oldProjeto.excerpt = smartTrim(body, 320, " ", " ...");
         oldProjeto.desc = stripHtml(body.substring(0, 160));
+      }
+      if (selos) {
+        oldProjeto.selos = selos.split(",");
       }
 
       oldProjeto.save((err, result) => {

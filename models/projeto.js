@@ -24,7 +24,7 @@ const projetoSchema = new mongoose.Schema(
       required: true,
     },
     eixo: { type: ObjectId, ref: "Eixo", required: true },
-    selo: { type: ObjectId, ref: "Selo" },
+    selos: [{ type: ObjectId, ref: "Selo" }],
   },
   { timestamp: true }
 );
