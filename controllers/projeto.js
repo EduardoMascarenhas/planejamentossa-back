@@ -58,14 +58,16 @@ exports.create = (req, res) => {
 };
 
 exports.list = (req, res) => {
-  Projeto.find({}).exec((err, data) => {
-    if (err) {
-      return res.status(400).json({
-        error: errorHandler(err),
-      });
-    }
-    res.json(data);
-  });
+  Projeto.find({})
+    .populate("eixo", "_id title slug borderColor")
+    .exec((err, data) => {
+      if (err) {
+        return res.status(400).json({
+          error: errorHandler(err),
+        });
+      }
+      res.json(data);
+    });
 };
 
 exports.read = (req, res) => {
