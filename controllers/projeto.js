@@ -18,7 +18,7 @@ exports.create = (req, res) => {
       });
     }
 
-    const { name, subTitle, body } = fields;
+    const { name, subTitle, body, eixo, selo } = fields;
     if (!name || !name.length) {
       return res.status(400).json({
         error: "É nescessário digitar um nome para o projeto",
@@ -30,9 +30,16 @@ exports.create = (req, res) => {
         error: "Conteúdo do projeto é muito curto",
       });
     }
+    if (!eixo) {
+      return res.status(400).json({
+        error: "É nescessário selecionar um eixo",
+      });
+    }
 
     let projeto = new Projeto();
     projeto.name = name;
+    projeto.eixo = eixo;
+    projeto.selo = selo;
     projeto.subTitle = subTitle;
     projeto.body = body;
     projeto.slug = slugify(name).toLowerCase();
@@ -62,14 +69,17 @@ exports.list = (req, res) => {
 exports.read = (req, res) => {
   const slug = req.params.slug.toLowerCase();
 
-  Projeto.findOne({ slug }).exec((err, projeto) => {
-    if (err) {
-      return res.status(400).json({
-        error: errorHandler(err),
-      });
-    }
-    res.json(projeto);
-  });
+  Projeto.findOne({ slug })
+    .populate("eixo", "_id title slug")
+    .populate("selo", "_id title")
+    .exec((err, projeto) => {
+      if (err) {
+        return res.status(400).json({
+          error: errorHandler(err),
+        });
+      }
+      res.json(projeto);
+    });
 };
 
 exports.remove = (req, res) => {
@@ -110,7 +120,7 @@ exports.update = (req, res) => {
       oldProjeto = _.merge(oldProjeto, fields);
       oldProjeto.slug = slugBeforeMerge;
 
-      const { name, subTitle, body, categories } = fields;
+      const { name, subTitle, body, eixo, selo, categories } = fields;
 
       if (body) {
         oldProjeto.excerpt = smartTrim(body, 320, " ", " ...");

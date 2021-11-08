@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { ObjectId } = mongoose.Schema;
 
 const projetoSchema = new mongoose.Schema(
   {
@@ -22,6 +23,8 @@ const projetoSchema = new mongoose.Schema(
       type: {},
       required: true,
     },
+    eixo: { type: ObjectId, ref: "Eixo", required: true },
+    selo: { type: ObjectId, ref: "Selo" },
   },
   { timestamp: true }
 );
