@@ -53,6 +53,7 @@ exports.create = (req, res) => {
         error: "É nescessário inserir o código da cor",
       });
     }
+
     let eixo = new Eixo();
     eixo.title = title;
     eixo.subTitle = subTitle;

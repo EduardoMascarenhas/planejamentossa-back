@@ -19,6 +19,7 @@ const cartaRoutes = require("./routes/carta");
 const sliderRoutes = require("./routes/slider");
 const bannerRoutes = require("./routes/banner");
 const seloRoutes = require("./routes/selo");
+const arquivoRoutes = require("./routes/arquivo");
 
 // app
 const app = express();
@@ -53,6 +54,7 @@ app.use("/api", cartaRoutes);
 app.use("/api", sliderRoutes);
 app.use("/api", bannerRoutes);
 app.use("/api", seloRoutes);
+app.use("/api", arquivoRoutes);
 
 const port = process.env.PORT || 8000;
 
