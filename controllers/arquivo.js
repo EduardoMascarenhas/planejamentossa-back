@@ -18,11 +18,6 @@ exports.create = (req, res) => {
     let arquivo = new Arquivo();
 
     if (files.arquivo) {
-      if (files.arquivo.size > 3000000) {
-        return res.status(400).json({
-          error: "Images should be less then 3mb in size",
-        });
-      }
       arquivo.arquivo.data = fs.readFileSync(files.arquivo.path);
       arquivo.arquivo.contentType = files.arquivo.type;
     }
@@ -110,11 +105,6 @@ exports.update = (req, res) => {
       const { arquivo } = fields;
 
       if (files.arquivo) {
-        if (files.arquivo.size > 3000000) {
-          return res.status(400).json({
-            error: "Image should be less then 3mb in size",
-          });
-        }
         oldArquivo.arquivo.data = fs.readFileSync(files.arquivo.path);
         oldArquivo.arquivo.contentType = files.arquivo.type;
       }
